@@ -42,10 +42,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ADTs\CircularBitsBuffer.cs" />
     <Compile Include="ADTs\CircularBuffer.cs" />
     <Compile Include="ADTs\Nucleotide.cs" />
-    <Compile Include="ADTs\NucleotideContextGrep.cs" />
+    <Compile Include="Algorithms\Base\NucleotideContextGrep.cs" />
+    <Compile Include="Algorithms\Naive.cs" />
     <Compile Include="Algorithms\RabinKarp.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

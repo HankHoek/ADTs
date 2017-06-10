@@ -8,7 +8,10 @@ namespace NucleotideGrep.ADTs
 {
     /// <summary>
     /// Nucleotide stores an ascii byte over the alphabet "ACGTe", so that we can use BinaryReader for IO performance.
+    ///
     /// For in-memory storage, Nucleotide is also addressable via a NucleotideAs2Bits property.
+    ///     2-bit storage has been abandoned in favor of simplicity, given no tight memory bounds and only a 4:1 compression ratio at some perf-cost.
+    ///
     /// For convenience in .NET, Nucleotide is also addressable via a Char property and via ToString().
     /// </summary>
     public struct Nucleotide

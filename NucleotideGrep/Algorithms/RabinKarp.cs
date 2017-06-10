@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+//using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,16 +16,19 @@ namespace NucleotideGrep.Algorithms
     sealed class RabinKarp : NucleotideContextGrep
     {
         public RabinKarp(
-            string tPattern,
+            Nucleotide[] tPattern,
             int xPrior,
             int yFollowing
             ) : base(tPattern, xPrior, yFollowing)
         {
         }
 
-        public override bool HasCompleteMatchOnAdd(Nucleotide.Nucleotide2Bits bits, out string contextMatch)
+        public override bool HasCompleteMatchOnAdd(Nucleotide nucleotide, out string contextMatch)
         {
-            base.Buffer.Add((byte)bits);
+            base.Buffer.Enqueue(nucleotide);
+
+            //  
+
             throw new NotImplementedException();
         }
 

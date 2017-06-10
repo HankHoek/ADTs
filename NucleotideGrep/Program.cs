@@ -40,6 +40,17 @@ using NucleotideGrep.Algorithms;
  *      index-building on the input stream seems like overkill without additional spec.
  *      
  *      Finding and consuming an appropriate library seems like the right way to go.  Not sure if ok in an interview context.
+ *      
+ *      
+ *      Tests:
+ *          0, "", 0
+ *          0, "A", 0
+ *          0, "A", 1
+ *          1, "A", 0
+ *          1, "A", 1
+ *          Spec-Test
+ *          ??
+ *          
  */
 
 
@@ -56,12 +67,16 @@ namespace NucleotideGrep
             int x = 5;
             int y = 7;
             string T = "AGTA";
+            Nucleotide[] tPattern = T
+                .Select(c => new Nucleotide { Char = c })
+                .ToArray();
+
             string testStream = "AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe";
 
             using (TextReader tr = new StringReader(testStream))
             {
-                NucleotideContextGrep grep = new RabinKarp(
-                    tPattern: T,
+                NucleotideContextGrep grep = new Naive( //new RabinKarp(
+                    tPattern: tPattern,
                     xPrior: x,
                     yFollowing: y);
 
@@ -69,12 +84,14 @@ namespace NucleotideGrep
                 while (!(nucleotide = Next(tr)).IsEOF)   //  NOTE:  Missing EOFValue throws exception on end-of-stream, since it breaks spec.
                 {
                     string contextMatch;
-                    if (grep.HasCompleteMatchOnAdd(nucleotide.NucleotideAs2Bits, out contextMatch))
+                    if (grep.HasCompleteMatchOnAdd(nucleotide, out contextMatch))
                     {
+                        Console.Write("MATCH: ");
                         Console.WriteLine(contextMatch);    //  x may be incomplete, but y is populated.
                     }
+                    grep.ToString();
                 }
-                foreach(string tailContextMatch in grep.GetTailContextMatches())
+                foreach (string tailContextMatch in grep.GetTailContextMatches())
                 {
                     Console.WriteLine(tailContextMatch);    //  y is incomplete, approaching EOF.
                 }
