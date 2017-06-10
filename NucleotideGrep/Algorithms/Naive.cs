@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using NucleotideGrep.ADTs;
+using JetBlack.Core.Collections.Generic;
 
 namespace NucleotideGrep.Algorithms
 {
@@ -43,9 +44,32 @@ namespace NucleotideGrep.Algorithms
                     contextMatch = null;
                     return false;
                 }
-                else
+                if(Buffer.Count + 1 == Buffer.Capacity)
                 {
+                    Console.Write("FirstBufferCharTested:  ");
+                    for (int i = 0; i < TPatternOffset; i++)
+                        Console.Write("{0}", Buffer[i]);
+                    Console.WriteLine();
+
                     //  Spool forward from 
+                    for (int offset = 0; offset < TPatternOffset; offset++)
+                    {
+                        if(IsMatch(TPattern, Buffer, offset))
+                        {
+                            //  print with reduced length as needed.
+                            int length = offset + TPattern.Length + YFollowing;
+
+                            //  Build contextMatch string
+                            var stringBuilder = new StringBuilder(length);
+                            for(int i = 0; i < length; i++)
+                            {
+                                stringBuilder.Append(Buffer[i].Char);
+                            }
+                            Console.WriteLine(stringBuilder.ToString());
+                            //  contextMatch = stringBuilder.ToString();
+                            contextMatch = "todo -- string should be output...";
+                        }
+                    }
                 }
             }
 
@@ -78,5 +102,15 @@ namespace NucleotideGrep.Algorithms
             throw new NotImplementedException();
         }
 
+        private static bool IsMatch(Nucleotide[] tPattern, CircularBuffer<Nucleotide> buffer, int offset)
+        {
+            //  Test for tPattern match
+            for (int i = 0; i < tPattern.Length; i++)
+            {
+                if (tPattern[i].Ascii != buffer[i + offset].Ascii)
+                    return false;
+            }
+            return true;
+        }
     }
 }
