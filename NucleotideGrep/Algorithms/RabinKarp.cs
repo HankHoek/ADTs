@@ -25,7 +25,7 @@ namespace NucleotideGrep.Algorithms
 
         public override bool HasCompleteMatchOnAdd(Nucleotide.Nucleotide2Bits bits, out string contextMatch)
         {
-            base.Buffer.Add((int)bits);
+            base.Buffer.Add((byte)bits);
             throw new NotImplementedException();
         }
 

@@ -17,7 +17,7 @@ namespace NucleotideGrep.ADTs
         /// Nucleotide2Bits is an enum with a stated BitCnt of 2.
         /// Only the two low-order bits are used for the alphabet.
         /// </summary>
-        public enum Nucleotide2Bits
+        public enum Nucleotide2Bits : byte
         {
             A = 0,
             C = 1,

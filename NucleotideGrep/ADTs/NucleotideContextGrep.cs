@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JetBlack.Core.Collections.Generic;
 
 namespace NucleotideGrep.ADTs
 {
@@ -14,7 +15,7 @@ namespace NucleotideGrep.ADTs
 
     public abstract class NucleotideContextGrep : IContextMatchNucleotides
     {
-        protected CircularBitsBuffer Buffer;
+        protected CircularBuffer<byte> Buffer;
 
         protected NucleotideContextGrep(
             string tPattern,
@@ -24,7 +25,7 @@ namespace NucleotideGrep.ADTs
         {
             int elementsCnt = xPrior + tPattern.Length + yFollowing;
 
-            Buffer = new CircularBitsBuffer(elementsCnt: elementsCnt, bitsPerElement: Nucleotide.NucleotideBitCnt);
+            Buffer = new CircularBitsBuffer<byte>(elementsCnt: elementsCnt, bitsPerElement: Nucleotide.NucleotideBitCnt);
         }
 
         public abstract bool HasCompleteMatchOnAdd(Nucleotide.Nucleotide2Bits bits, out string contextMatch);
