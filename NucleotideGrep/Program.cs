@@ -81,39 +81,57 @@ namespace NucleotideGrep
                     yFollowing: y);
 
                 Nucleotide nucleotide;
+
+                //  Fill grep's contextBuffer before evaluating any lead-in matches.
                 while (!(nucleotide = Next(tr)).IsEOF)   //  NOTE:  Missing EOFValue throws exception on end-of-stream, since it breaks spec.
                 {
-                    string contextMatch;
-                    if (grep.HasCompleteMatchOnAdd(nucleotide, out contextMatch))
+                    if (grep.HasCompleteContextOnAdd(nucleotide))
+                        break;
+                }
+
+                //  output any lead-in matches
+                foreach(string contextMatch in grep.GetLeadInMatches())
+                {
+                    Console.WriteLine(contextMatch);    //  x may be incomplete, but y is populated if possible.
+                    Console.WriteLine(grep.Marker);
+                }
+
+                //  output any rolling buffer matches
+                string rollingContextMatch = null;
+                while (!(nucleotide = Next(tr)).IsEOF)   //  NOTE:  Missing EOFValue throws exception on end-of-stream, since it breaks spec.
+                {
+                    if (grep.HasCompleteMatchOnAdd(nucleotide, ref rollingContextMatch))
                     {
-                        Console.Write("MATCH: ");
-                        Console.WriteLine(contextMatch);    //  x may be incomplete, but y is populated.
+                        Console.WriteLine(rollingContextMatch);    //  x, isPattern and y are populated. this loop should be perf-optimized.
+                        Console.WriteLine(grep.Marker);
                     }
                     grep.ToString();
                 }
-                foreach (string tailContextMatch in grep.GetTailContextMatches())
+
+                foreach (string tailContextMatch in grep.GetTailOutMatches())
                 {
                     Console.WriteLine(tailContextMatch);    //  y is incomplete, approaching EOF.
+                    Console.WriteLine(grep.Marker);
                 }
 
 
 
 
-                    //    if (grep.IsFilledYFollowing)
-                    //if(grep.TryGetMatchWithFilledTrailingBuffer())
-                    //ReturnMatchIfTrailingBuffer(nucleotide)
+                //    if (grep.IsFilledYFollowing)
+                //if(grep.TryGetMatchWithFilledTrailingBuffer())
+                //ReturnMatchIfTrailingBuffer(nucleotide)
 
-                    //Nucleotide.Nucleotide2Bits n2 = nucleotide.As2BitEnum();
+                //Nucleotide.Nucleotide2Bits n2 = nucleotide.As2BitEnum();
 
-                    //buffer.Add(n2);
-                    //if(! IsPopulatedTrailingBuffer)
-                    ////  PERF-NOTE:  Since subsequent operations deal with 2-bit Nucleotide.Enums, input-stream
-
-
-                    ////buffer.
+                //buffer.Add(n2);
+                //if(! IsPopulatedTrailingBuffer)
+                ////  PERF-NOTE:  Since subsequent operations deal with 2-bit Nucleotide.Enums, input-stream
 
 
-                    //Console.Write(nucleotide.Char);
+                ////buffer.
+
+
+                //Console.Write(nucleotide.Char);
                 //}
 
 

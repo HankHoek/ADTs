@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+//using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,8 +11,8 @@ namespace NucleotideGrep.Algorithms
 {
     interface IContextMatchNucleotides
     {
-        bool HasCompleteMatchOnAdd(Nucleotide nucleotide, out string contextMatch);
-        IEnumerable<string> GetTailContextMatches();
+        bool HasCompleteMatchOnAdd(Nucleotide nucleotide, ref string contextMatch);
+        IEnumerable<string> GetTailOutMatches();
     }
 
     public abstract class NucleotideContextGrep : IContextMatchNucleotides
@@ -39,8 +39,25 @@ namespace NucleotideGrep.Algorithms
             Buffer = new CircularBuffer<Nucleotide>(elementsCnt);
         }
 
-        public abstract bool HasCompleteMatchOnAdd(Nucleotide nucleotide, out string contextMatch);
-        public abstract IEnumerable<string> GetTailContextMatches();
+        public bool HasCompleteContextOnAdd(Nucleotide nucleotide)
+        {
+            Buffer.Enqueue(nucleotide);
+            return Buffer.Count == Buffer.Capacity;
+        }
+        public abstract IEnumerable<string> GetLeadInMatches();
+        public abstract bool HasCompleteMatchOnAdd(Nucleotide nucleotide, ref string contextMatch);
+        public abstract IEnumerable<string> GetTailOutMatches();
+
+        public string Marker
+        {
+            get
+            {
+                var sb = new StringBuilder();
+                for (int i = 0; i < XPrior; i++) sb.Append(' ');
+                for (int i = 0; i < TPattern.Length; i++) sb.Append('=');
+                return sb.ToString();
+            }
+        }
 
         public override string ToString()
         {

@@ -23,7 +23,7 @@ namespace NucleotideGrep.Algorithms
         {
         }
 
-        public override bool HasCompleteMatchOnAdd(Nucleotide nucleotide, out string contextMatch)
+        public override bool HasCompleteMatchOnAdd(Nucleotide nucleotide, ref string contextMatch)
         {
             base.Buffer.Enqueue(nucleotide);
 
@@ -32,10 +32,14 @@ namespace NucleotideGrep.Algorithms
             throw new NotImplementedException();
         }
 
-        public override IEnumerable<string> GetTailContextMatches()
+        public override IEnumerable<string> GetTailOutMatches()
         {
             throw new NotImplementedException();
         }
 
+        public override IEnumerable<string> GetLeadInMatches()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
