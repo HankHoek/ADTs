@@ -45,6 +45,7 @@
     <Compile Include="ADTs\CircularBuffer.cs" />
     <Compile Include="ADTs\Nucleotide.cs" />
     <Compile Include="Algorithms\Base\NucleotideContextGrep.cs" />
+    <Compile Include="Algorithms\BoyerMoore.cs" />
     <Compile Include="Algorithms\Naive.cs" />
     <Compile Include="Algorithms\RabinKarp.cs" />
     <Compile Include="Program.cs" />
@@ -52,6 +53,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="README.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

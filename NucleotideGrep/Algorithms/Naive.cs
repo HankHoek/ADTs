@@ -11,8 +11,9 @@ namespace NucleotideGrep.Algorithms
 {
     /// <summary>
     /// The naive algorithm does a string comparison at each position.
-    /// Runtime is O(nT) -- StreamLength * PatternLength.
-    /// Evaluating as an Online algorithm and dropping StreamLength, Runtime for each next Nucleotide is O(T) -- PatternLength.
+    /// Runtime is O(streamLength * PatternLength + contextMatches*outLength).
+    /// Comparison-cost per nucleotide is O(PatternLength).
+    ///     For comparison, RabinKarp can update a pre-filter rolling-hash in O(1) time per nucleotide.
     /// The class is sealed so the compiler can optimize the virtual method-calls.
     /// </summary>
     sealed class Naive : NucleotideContextGrep

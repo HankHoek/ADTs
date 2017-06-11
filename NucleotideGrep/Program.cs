@@ -73,13 +73,19 @@ namespace NucleotideGrep
 
             string testStream = "AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe";
 
+            NucleotideContextGrep grep = new Naive( //new RabinKarp(    //new BoyerMoore(
+                tPattern: tPattern,
+                xPrior: x,
+                yFollowing: y);
+
+            PrintContextMatches(testStream, grep);
+
+        }
+
+        private static void PrintContextMatches(string testStream, NucleotideContextGrep grep)
+        {
             using (TextReader tr = new StringReader(testStream))
             {
-                NucleotideContextGrep grep = new Naive( //new RabinKarp(
-                    tPattern: tPattern,
-                    xPrior: x,
-                    yFollowing: y);
-
                 Nucleotide nucleotide;
 
                 //  Fill grep's contextBuffer before evaluating any lead-in matches.
@@ -90,7 +96,7 @@ namespace NucleotideGrep
                 }
 
                 //  output any lead-in matches
-                foreach(string contextMatch in grep.GetLeadInMatches())
+                foreach (string contextMatch in grep.GetLeadInMatches())
                 {
                     Console.WriteLine(contextMatch);    //  x may be incomplete, but y is populated if possible.
                     Console.WriteLine(grep.Marker);
@@ -115,34 +121,9 @@ namespace NucleotideGrep
                 }
 
 
-
-
-                //    if (grep.IsFilledYFollowing)
-                //if(grep.TryGetMatchWithFilledTrailingBuffer())
-                //ReturnMatchIfTrailingBuffer(nucleotide)
-
-                //Nucleotide.Nucleotide2Bits n2 = nucleotide.As2BitEnum();
-
-                //buffer.Add(n2);
-                //if(! IsPopulatedTrailingBuffer)
-                ////  PERF-NOTE:  Since subsequent operations deal with 2-bit Nucleotide.Enums, input-stream
-
-
-                ////buffer.
-
-
-                //Console.Write(nucleotide.Char);
-                //}
-
-
             }
-
         }
 
-        static void PrintMatchesWithContext(string target)
-        {
-
-        }
 
         //  For convenience in .NET -- beware IO bottleneck.
         static Nucleotide Next(TextReader tr)
@@ -150,7 +131,7 @@ namespace NucleotideGrep
             return new Nucleotide { Char = (char)tr.Read() };
         }
 
-        //  For speed, when reading raw ascii bytes.
+        //  For speed when reading raw ascii bytes.
         static Nucleotide Next(BinaryReader br)
         {
             return new Nucleotide { Ascii = br.ReadByte() };
