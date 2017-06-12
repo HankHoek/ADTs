@@ -29,3 +29,41 @@
  *  
  * Conclusion:  Probably better to demonstrate something in GoLang than go further down this path in C#.
  */
+
+using System;
+using System.Collections.Generic;
+using NucleotideGrep.ADTs;
+
+namespace NucleotideGrep.Algorithms
+{
+    /// <summary>
+    /// NOT Implemented
+    /// </summary>
+    sealed class BoyerMoore : NucleotideContextGrep
+    {
+        public BoyerMoore(
+            Nucleotide[] tPattern,
+            int xPrior,
+            int yFollowing
+            ) : base(tPattern, xPrior, yFollowing)
+        {
+            throw new NotFiniteNumberException();
+        }
+
+        protected override IEnumerable<string> GetLeadInMatches()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override bool HasCompleteMatchOnAdd(Nucleotide nucleotide, ref string contextMatch)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override IEnumerable<string> GetTailOutMatches()
+        {
+            throw new NotImplementedException();
+        }
+
+    }
+}

@@ -5,13 +5,11 @@ using NucleotideGrep.ADTs;
 namespace NucleotideGrep.Algorithms
 {
     /// <summary>
-    /// The RabinKarp algorithm calculates a rolling hash used to cheaply discard most mis-matches.
-    /// It is an optimization for the case where we scan for a long target-string.
-    /// The class is sealed so the compiler can optimize the virtual method-calls.
+    /// NOT Implemented
     /// </summary>
-    sealed class RabinKarp : NucleotideContextGrep
+    sealed class KnuthMorrisPratt : NucleotideContextGrep
     {
-        public RabinKarp(
+        public KnuthMorrisPratt(
             Nucleotide[] tPattern,
             int xPrior,
             int yFollowing

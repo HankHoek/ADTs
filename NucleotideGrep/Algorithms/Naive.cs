@@ -25,7 +25,8 @@ namespace NucleotideGrep.Algorithms
             ) : base(tPattern, xPrior, yFollowing)
         {
         }
-        public override bool HasCompleteMatchOnAdd(Nucleotide nucleotide, ref string contextMatch)
+
+        protected override bool HasCompleteMatchOnAdd(Nucleotide nucleotide, ref string contextMatch)
         {
 
             //  Update the buffer
@@ -52,7 +53,7 @@ namespace NucleotideGrep.Algorithms
 
             return true;
         }
-        public override IEnumerable<string> GetLeadInMatches()
+        protected override IEnumerable<string> GetLeadInMatches()
         {
             int maxOffset = Buffer.Count - TPattern.Length - YFollowing;
             //  Spool forward from start through expected 
@@ -77,7 +78,7 @@ namespace NucleotideGrep.Algorithms
                 }
             }
         }
-        public override IEnumerable<string> GetTailOutMatches()
+        protected override IEnumerable<string> GetTailOutMatches()
         {
             int maxOffset = Buffer.Count - TPattern.Length;
             for (int offset = XPrior + 1; offset <= maxOffset; offset++)

@@ -71,70 +71,25 @@ namespace NucleotideGrep
                 .Select(c => new Nucleotide { Char = c })
                 .ToArray();
 
-            string testStream = "AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe";
+            byte[] streamBytes = Encoding.ASCII.GetBytes("AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe");
 
-            NucleotideContextGrep grep = new Naive( //new RabinKarp(    //new BoyerMoore(
-                tPattern: tPattern,
+            NucleotideContextGrep grep = NucleotideContextGrep.Create(
+                NucleotideContextGrepAlgorithm.Naive,
+                tPattern: tPattern, //  e.g. "AGTA"
                 xPrior: x,
                 yFollowing: y);
 
-            PrintContextMatches(testStream, grep);
-
-        }
-
-        private static void PrintContextMatches(string testStream, NucleotideContextGrep grep)
-        {
-            using (TextReader tr = new StringReader(testStream))
+            using (MemoryStream stream = new MemoryStream(streamBytes))
+            using (BinaryReader br = new BinaryReader(stream))
             {
-                Nucleotide nucleotide;
-
-                //  Fill grep's contextBuffer before evaluating any lead-in matches.
-                while (!(nucleotide = Next(tr)).IsEOF)   //  NOTE:  Missing EOFValue throws exception on end-of-stream, since it breaks spec.
+                foreach (string contextMatch in grep.GetContextMatches(br))
                 {
-                    if (grep.HasCompleteContextOnAdd(nucleotide))
-                        break;
+                    Console.WriteLine(contextMatch);    //  e.g. CAGTGAGTAGTACACC
+                    Console.WriteLine(grep.Marker);     //  e.g.      ====
                 }
-
-                //  output any lead-in matches
-                foreach (string contextMatch in grep.GetLeadInMatches())
-                {
-                    Console.WriteLine(contextMatch);    //  x may be incomplete, but y is populated if possible.
-                    Console.WriteLine(grep.Marker);
-                }
-
-                //  output any rolling buffer matches
-                string rollingContextMatch = null;
-                while (!(nucleotide = Next(tr)).IsEOF)   //  NOTE:  Missing EOFValue throws exception on end-of-stream, since it breaks spec.
-                {
-                    if (grep.HasCompleteMatchOnAdd(nucleotide, ref rollingContextMatch))
-                    {
-                        Console.WriteLine(rollingContextMatch);    //  x, isPattern and y are populated. this loop should be perf-optimized.
-                        Console.WriteLine(grep.Marker);
-                    }
-                    grep.ToString();
-                }
-
-                foreach (string tailContextMatch in grep.GetTailOutMatches())
-                {
-                    Console.WriteLine(tailContextMatch);    //  y is incomplete, approaching EOF.
-                    Console.WriteLine(grep.Marker);
-                }
-
-
             }
+
         }
 
-
-        //  For convenience in .NET -- beware IO bottleneck.
-        static Nucleotide Next(TextReader tr)
-        {
-            return new Nucleotide { Char = (char)tr.Read() };
-        }
-
-        //  For speed when reading raw ascii bytes.
-        static Nucleotide Next(BinaryReader br)
-        {
-            return new Nucleotide { Ascii = br.ReadByte() };
-        }
     }
 }
