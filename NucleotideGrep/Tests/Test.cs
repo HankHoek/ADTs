@@ -65,7 +65,7 @@ namespace NucleotideGrep.Tests
 
         public override string ToString()
         {
-            return string.Format("Name={0}  Pattern=\"{1}\"  X={2}  Y={3}  Stream=\"{4}\"  Expected={6}", Name, Pattern, X, Y, Stream, Environment.NewLine, Expected);
+            return string.Format("Name={0}  Pattern=\"{1}\"  X={2}  Y={3}  Stream=\"{4}\"  Expected=\"{6}\"", Name, Pattern, X, Y, Stream, Environment.NewLine, Expected);
         }
     }
 
@@ -75,61 +75,64 @@ namespace NucleotideGrep.Tests
         {
             var tests = new List<Test>()
             {
-                //new Test("Empty pattern throws", "", 5, 7, "ACGTe", "System.ApplicationException"),
+                new Test("Empty pattern throws", "", 5, 7, "ACGTe", "System.ApplicationException"),
 
-                //new Test("0,A,0", "A", 0, 0, "ACGTe", "A"),
-                //new Test("0,A,1", "A", 0, 1, "ACGTe", "AC"),
-                //new Test("0,A,2", "A", 0, 2, "ACGTe", "ACG"),
+                new Test("0,A,0", "A", 0, 0, "ACGTe", "A"),
+                new Test("0,A,1", "A", 0, 1, "ACGTe", "AC"),
+                new Test("0,A,2", "A", 0, 2, "ACGTe", "ACG"),
 
-                //new Test("1,A,0", "A", 1, 0, "ACGTe", " A"),
-                //new Test("1,A,1", "A", 1, 1, "ACGTe", " AC"),
-                //new Test("1,A,2", "A", 1, 2, "ACGTe", " ACG"),
+                new Test("1,A,0", "A", 1, 0, "ACGTe", " A"),
+                new Test("1,A,1", "A", 1, 1, "ACGTe", " AC"),
+                new Test("1,A,2", "A", 1, 2, "ACGTe", " ACG"),
 
-                //new Test("2,A,0", "A", 2, 0, "ACGTe", "  A"),
-                //new Test("2,A,1", "A", 2, 1, "ACGTe", "  AC"),
-                //new Test("2,A,2", "A", 2, 2, "ACGTe", "  ACG"),
-
-
-                //new Test("Name", "C", 0, 0, "ACGTe", "C"),
-                //new Test("Name", "C", 0, 1, "ACGTe", "CG"),
-                //new Test("Name", "C", 0, 2, "ACGTe", "CGT"),
-
-                //new Test("Name", "C", 1, 0, "ACGTe", "AC"),
-                //new Test("Name", "C", 1, 1, "ACGTe", "ACG"),
-                //new Test("Name", "C", 1, 2, "ACGTe", "ACGT"),
-
-                //new Test("Name", "C", 2, 0, "ACGTe", " AC"),
-                //new Test("Name", "C", 2, 1, "ACGTe", " ACG"),
-                //new Test("Name", "C", 2, 2, "ACGTe", " ACGT"),
+                new Test("2,A,0", "A", 2, 0, "ACGTe", "  A"),
+                new Test("2,A,1", "A", 2, 1, "ACGTe", "  AC"),
+                new Test("2,A,2", "A", 2, 2, "ACGTe", "  ACG"),
 
 
-                //new Test("Name", "G", 0, 0, "ACGTe", "G"),
-                //new Test("Name", "G", 0, 1, "ACGTe", "GT"),
-                //new Test("Name", "G", 0, 2, "ACGTe", "GTE"),
+                new Test("Name", "C", 0, 0, "ACGTe", "C"),
+                new Test("Name", "C", 0, 1, "ACGTe", "CG"),
+                new Test("Name", "C", 0, 2, "ACGTe", "CGT"),
 
-                //new Test("Name", "G", 1, 0, "ACGTe", "CG"),
-                //new Test("Name", "G", 1, 1, "ACGTe", "CGT"),
-                //new Test("Name", "G", 1, 2, "ACGTe", "CGTE"),
+                new Test("Name", "C", 1, 0, "ACGTe", "AC"),
+                new Test("Name", "C", 1, 1, "ACGTe", "ACG"),
+                new Test("Name", "C", 1, 2, "ACGTe", "ACGT"),
 
-                //new Test("Name", "G", 2, 0, "ACGTe", "ACG"),
-                //new Test("Name", "G", 2, 1, "ACGTe", "ACGT"),
-                //new Test("Name", "G", 2, 2, "ACGTe", "ACGT"),
+                new Test("Name", "C", 2, 0, "ACGTe", " AC"),
+                new Test("Name", "C", 2, 1, "ACGTe", " ACG"),
+                new Test("Name", "C", 2, 2, "ACGTe", " ACGT"),
 
-                //new Test("Name", "T", 0, 0, "ACGTe", "T"),
-                //new Test("Name", "T", 0, 1, "ACGTe", "T"),
-                //new Test("Name", "T", 0, 2, "ACGTe", "T"),
 
-                //new Test("Name", "T", 1, 0, "ACGTe", "GT"),
-                //new Test("Name", "T", 1, 1, "ACGTe", "GT"),
-                //new Test("Name", "T", 1, 2, "ACGTe", "GT"),
+                new Test("Name", "G", 0, 0, "ACGTe", "G"),
+                new Test("Name", "G", 0, 1, "ACGTe", "GT"),
+                new Test("Name", "G", 0, 2, "ACGTe", "GTE"),
 
-                //new Test("Name", "T", 2, 0, "ACGTe", "CGT"),
-                //new Test("Name", "T", 2, 1, "ACGTe", "CGT"),
-                //new Test("Name", "T", 2, 2, "ACGTe", "CGT"),
+                new Test("Name", "G", 1, 0, "ACGTe", "CG"),
+                new Test("Name", "G", 1, 1, "ACGTe", "CGT"),
+                new Test("Name", "G", 1, 2, "ACGTe", "CGTE"),
+
+                new Test("Name", "G", 2, 0, "ACGTe", "ACG"),
+                new Test("Name", "G", 2, 1, "ACGTe", "ACGT"),
+                new Test("Name", "G", 2, 2, "ACGTe", "ACGT"),
+
+                new Test("Name", "T", 0, 0, "ACGTe", "T"),
+                new Test("Name", "T", 0, 1, "ACGTe", "T"),
+                new Test("Name", "T", 0, 2, "ACGTe", "T"),
+
+                new Test("Name", "T", 1, 0, "ACGTe", "GT"),
+                new Test("Name", "T", 1, 1, "ACGTe", "GT"),
+                new Test("Name", "T", 1, 2, "ACGTe", "GT"),
+
+                new Test("Name", "T", 2, 0, "ACGTe", "CGT"),
+                new Test("Name", "T", 2, 1, "ACGTe", "CGT"),
+                new Test("Name", "T", 2, 2, "ACGTe", "CGT"),
 
                 new Test("Name", "A", 2, 2, "e", ""),
                 new Test("Name", "A", 2, 2, "Ae", "  A"),
-                new Test("Name", "A", 2, 2, "AAe", "Multiple"),
+                new Test("Name", "A", 2, 2, "AAe", "2"),
+                new Test("Name", "A", 2, 2, "AAAe", "3"),
+                new Test("Name", "A", 2, 2, "AAAAe", "4"),
+                new Test("Name", "A", 2, 2, "AAAAAe", "5"),
             };
 
             foreach (var test in tests)

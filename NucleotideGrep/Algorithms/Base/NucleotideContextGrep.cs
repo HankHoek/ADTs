@@ -57,6 +57,7 @@ namespace NucleotideGrep.Algorithms
         protected readonly int XPrior;
         protected readonly int YFollowing;
         protected int TPatternOffset;
+        protected int LastOffsetHandledByLeadIn;
 
         protected NucleotideContextGrep(
             Nucleotide[] tPattern,

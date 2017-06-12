@@ -55,9 +55,10 @@ namespace NucleotideGrep.Algorithms
         }
         protected override IEnumerable<string> GetLeadInMatches()
         {
-            int maxOffset = Buffer.Count - TPattern.Length - YFollowing;
+            int lastPossibleMatch = Buffer.Count - TPattern.Length;
+            LastOffsetHandledByLeadIn = Math.Min(lastPossibleMatch, XPrior);
             //  Spool forward from start through expected 
-            for (int offset = 0; offset <= maxOffset; offset++)
+            for (int offset = 0; offset <= LastOffsetHandledByLeadIn; offset++)
             {
                 if (IsMatch(TPattern, Buffer, offset))
                 {
@@ -73,7 +74,7 @@ namespace NucleotideGrep.Algorithms
                     //  Add the context-matched string
                     for (int i = 0; i < length; i++)
                         sb.Append(Buffer[i].Char);
-
+                    //sb.Append(" << LeadIn");
                     yield return sb.ToString();
                 }
             }
@@ -82,6 +83,10 @@ namespace NucleotideGrep.Algorithms
         {
             int startOffset = eofDuringLeadIn && XPrior + YFollowing >= Buffer.Count 
                 ? XPrior : XPrior + 1;
+
+            //  Don't repeat anything handled by xLeadin
+            startOffset = Math.Max(startOffset, LastOffsetHandledByLeadIn + 1);
+
             int maxOffset = Buffer.Count - TPattern.Length;
             for (int offset = startOffset; offset <= maxOffset; offset++)
             {
@@ -95,6 +100,7 @@ namespace NucleotideGrep.Algorithms
                     for (int i = firstOffset; i < Buffer.Count; i++)
                         sb.Append(Buffer[i].Char);
 
+                    //sb.Append(" >> TailOut");
                     yield return sb.ToString();
                 }
             }
