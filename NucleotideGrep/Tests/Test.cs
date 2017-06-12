@@ -97,6 +97,7 @@ namespace NucleotideGrep.Tests
                 new Test("Empty pattern throws", "", 5, 7, "ACGTe", "System.ApplicationException"),
                 new Test("Missing 'e' throws", "A", 5, 7, "ACGT", "System.IO.EndOfStreamException"),
 
+                //        Name     T   x  y  stream   matchExpectation/matchCount
                 new Test("0,A,0", "A", 0, 0, "ACGTe", "A"),
                 new Test("0,A,1", "A", 0, 1, "ACGTe", "AC"),
                 new Test("0,A,2", "A", 0, 2, "ACGTe", "ACG"),

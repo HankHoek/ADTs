@@ -15,6 +15,14 @@ namespace NucleotideGrep.Algorithms
     /// Comparison-cost per nucleotide is O(PatternLength).
     ///     For comparison, RabinKarp can update a pre-filter rolling-hash in O(1) time per nucleotide.
     /// The class is sealed so the compiler can optimize the virtual method-calls.
+    /// 
+    /// The looping patterns of HasCompleteMatchOnAdd has been optimized for use in alternate algorithms expected to beat Naive.
+    /// 
+    /// If the domain is restricted to short patterns, Naive might win:
+    ///     e.g. for pattern-length of 1, Naive is optimal.
+    ///     or with further optimization:
+    ///         e.g. If the pattern can be packed into one or a few longs,
+    ///              The number of comparisons could be reduced by up to 32x on a 64-bit system.
     /// </summary>
     sealed class Naive : NucleotideContextGrep
     {
