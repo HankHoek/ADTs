@@ -47,17 +47,36 @@ namespace NucleotideGrep.Tests
                 using (MemoryStream stream = new MemoryStream(streamBytes))
                 using (BinaryReader br = new BinaryReader(stream))
                 {
+                    int cnt = 0;
+                    string lastContextMatch = null;
                     foreach (string contextMatch in grep.GetContextMatches(br))
                     {
+                        cnt++;
+                        lastContextMatch = contextMatch;
                         Console.WriteLine(contextMatch);    //  e.g. CAGTGAGTAGTACACC
                         Console.WriteLine(grep.Marker);     //  e.g.      ^^^^
+                    }
+
+                    //  Assert Expectations
+                    if(cnt == 1)
+                    {
+                        if(lastContextMatch != Expected)
+                            throw new ApplicationException(string.Format(
+                                "ERROR:  lastContextMatch != Expected : {0} != {1}", lastContextMatch, Expected));
+                    }
+                    else
+                    {
+                        int expectedCnt = int.Parse(Expected);
+                        if (cnt != expectedCnt)
+                            throw new ApplicationException(string.Format(
+                                "ERROR:  count != expectedCnt : {0} != {1}", cnt, expectedCnt));
                     }
                 }
             }
             catch (Exception e)
             {
                 string strType = e.GetType().ToString();
-                Console.WriteLine("ExceptionType={0}", strType);
+                Console.WriteLine("  ExceptionType={0}", strType);
                 if (Expected != strType)
                     throw;
             }
@@ -76,6 +95,7 @@ namespace NucleotideGrep.Tests
             var tests = new List<Test>()
             {
                 new Test("Empty pattern throws", "", 5, 7, "ACGTe", "System.ApplicationException"),
+                new Test("Missing 'e' throws", "A", 5, 7, "ACGT", "System.IO.EndOfStreamException"),
 
                 new Test("0,A,0", "A", 0, 0, "ACGTe", "A"),
                 new Test("0,A,1", "A", 0, 1, "ACGTe", "AC"),
@@ -105,11 +125,11 @@ namespace NucleotideGrep.Tests
 
                 new Test("Name", "G", 0, 0, "ACGTe", "G"),
                 new Test("Name", "G", 0, 1, "ACGTe", "GT"),
-                new Test("Name", "G", 0, 2, "ACGTe", "GTE"),
+                new Test("Name", "G", 0, 2, "ACGTe", "GT"),
 
                 new Test("Name", "G", 1, 0, "ACGTe", "CG"),
                 new Test("Name", "G", 1, 1, "ACGTe", "CGT"),
-                new Test("Name", "G", 1, 2, "ACGTe", "CGTE"),
+                new Test("Name", "G", 1, 2, "ACGTe", "CGT"),
 
                 new Test("Name", "G", 2, 0, "ACGTe", "ACG"),
                 new Test("Name", "G", 2, 1, "ACGTe", "ACGT"),
@@ -127,12 +147,27 @@ namespace NucleotideGrep.Tests
                 new Test("Name", "T", 2, 1, "ACGTe", "CGT"),
                 new Test("Name", "T", 2, 2, "ACGTe", "CGT"),
 
-                new Test("Name", "A", 2, 2, "e", ""),
-                new Test("Name", "A", 2, 2, "Ae", "  A"),
-                new Test("Name", "A", 2, 2, "AAe", "2"),
-                new Test("Name", "A", 2, 2, "AAAe", "3"),
-                new Test("Name", "A", 2, 2, "AAAAe", "4"),
-                new Test("Name", "A", 2, 2, "AAAAAe", "5"),
+                new Test("MatchEvery", "A", 2, 2, "e", "0"),
+                new Test("MatchEvery", "A", 2, 2, "Ae", "  A"),
+                new Test("MatchEvery", "A", 2, 2, "AAe", "2"),
+                new Test("MatchEvery", "A", 2, 2, "AAAe", "3"),
+                new Test("MatchEvery", "A", 2, 2, "AAAAe", "4"),
+                new Test("MatchEvery", "A", 2, 2, "AAAAAe", "5"),
+
+                new Test("RollStart", "AGTA", 3, 3, "AAAAAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe", "4"),
+                new Test("RollStart", "AGTA", 3, 3,  "AAAAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe", "4"),
+                new Test("RollStart", "AGTA", 3, 3,   "AAAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe", "4"),
+                new Test("RollStart", "AGTA", 3, 3,    "AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe", "4"),
+                new Test("RollStart", "AGTA", 3, 3,     "AGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe", "4"),
+
+                new Test("RollEnd", "AGTA", 3, 3, "AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe", "4"),
+                new Test("RollEnd", "AGTA", 3, 3, "AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTe", "4"),
+                new Test("RollEnd", "AGTA", 3, 3, "AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCe", "4"),
+                new Test("RollEnd", "AGTA", 3, 3, "AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGe", "4"),
+                new Test("RollEnd", "AGTA", 3, 3, "AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAe", "4"),
+
+
+                new Test("SpecTest", "AGTA", 5, 7, "AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe", "4"),
             };
 
             foreach (var test in tests)
