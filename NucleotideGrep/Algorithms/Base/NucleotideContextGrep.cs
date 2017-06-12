@@ -64,6 +64,9 @@ namespace NucleotideGrep.Algorithms
             int yFollowing
             )
         {
+            if (tPattern == null || tPattern.Length == 0)
+                throw new ApplicationException("ERROR:  Pattern-Length Must be at least 1 char.");
+
             this.TPattern = tPattern;
             this.XPrior = xPrior;
             this.YFollowing = yFollowing;
@@ -89,17 +92,20 @@ namespace NucleotideGrep.Algorithms
                 yield return contextMatch;    //  x may be incomplete, but y is populated if possible.
 
             //  output any rolling buffer matches.  This loop should be especially perf-optimized.
-            string rollingContextMatch = null;
-            while (!(nucleotide = Next(br)).IsEOF)   //  NOTE:  Missing EOFValue throws exception on end-of-stream, since it breaks spec.
+            if (!nucleotide.IsEOF)
             {
-                if (HasCompleteMatchOnAdd(nucleotide, ref rollingContextMatch))
+                string rollingContextMatch = null;
+                while (!(nucleotide = Next(br)).IsEOF)   //  NOTE:  Missing EOFValue throws exception on end-of-stream, since it breaks spec.
                 {
-                    yield return rollingContextMatch;   //  x and y are both populated.
+                    if (HasCompleteMatchOnAdd(nucleotide, ref rollingContextMatch))
+                    {
+                        yield return rollingContextMatch;   //  x and y are both populated.
+                    }
                 }
             }
 
             //  output any remaining matches in the tail
-            foreach (string tailContextMatch in GetTailOutMatches())
+            foreach (string tailContextMatch in GetTailOutMatches(nucleotide.IsEOF))
             {
                 yield return tailContextMatch;    //  y is incomplete, approaching EOF.
             }
@@ -119,7 +125,7 @@ namespace NucleotideGrep.Algorithms
         }
         protected abstract IEnumerable<string> GetLeadInMatches();
         protected abstract bool HasCompleteMatchOnAdd(Nucleotide nucleotide, ref string contextMatch);
-        protected abstract IEnumerable<string> GetTailOutMatches();
+        protected abstract IEnumerable<string> GetTailOutMatches(bool eofDuringLeadIn);
 
         public string Marker
         {
@@ -127,7 +133,7 @@ namespace NucleotideGrep.Algorithms
             {
                 var sb = new StringBuilder();
                 for (int i = 0; i < XPrior; i++) sb.Append(' ');
-                for (int i = 0; i < TPattern.Length; i++) sb.Append('=');
+                for (int i = 0; i < TPattern.Length; i++) sb.Append('^');
                 return sb.ToString();
             }
         }

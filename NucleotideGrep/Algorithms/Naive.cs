@@ -78,10 +78,12 @@ namespace NucleotideGrep.Algorithms
                 }
             }
         }
-        protected override IEnumerable<string> GetTailOutMatches()
+        protected override IEnumerable<string> GetTailOutMatches(bool eofDuringLeadIn)
         {
+            int startOffset = eofDuringLeadIn && XPrior + YFollowing >= Buffer.Count 
+                ? XPrior : XPrior + 1;
             int maxOffset = Buffer.Count - TPattern.Length;
-            for (int offset = XPrior + 1; offset <= maxOffset; offset++)
+            for (int offset = startOffset; offset <= maxOffset; offset++)
             {
                 if (IsMatch(TPattern, Buffer, offset))
                 {

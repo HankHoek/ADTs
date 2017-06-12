@@ -30,7 +30,7 @@ namespace NucleotideGrep.Algorithms
             throw new NotImplementedException();
         }
 
-        protected override IEnumerable<string> GetTailOutMatches()
+        protected override IEnumerable<string> GetTailOutMatches(bool eofDuringLeadIn)
         {
             throw new NotImplementedException();
         }

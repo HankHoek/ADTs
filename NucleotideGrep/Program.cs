@@ -7,14 +7,15 @@ using System.Threading.Tasks;
 
 using NucleotideGrep.ADTs;
 using NucleotideGrep.Algorithms;
+using NucleotideGrep.Tests;
 
 /*
  * Implicit Design-Goals:
  *  The spec doesn't state desirable properties other than correctness.
  *  I have designed according to the below heirarchy:
  *      Correctness     -- UnitTest results
- *      Big-O Time      -- O(input + output), using RabinKarp
- *      Memory usage    -- Circular buffer, 2 bits/character
+ *      Big-O Time      -- O(input + output), using RabinKarp...
+ *      Memory usage    -- Circular buffer, ideally 2 bits/character
  *      Style           -- OO decomposition and encapsulation
  *      Developer time  -- 
  *      Conciseness     --  
@@ -49,7 +50,8 @@ using NucleotideGrep.Algorithms;
  *          1, "A", 0
  *          1, "A", 1
  *          Spec-Test
- *          ??
+ *          Offset the Spec-Test by 1-4 start-chars to prove xPrior boundary-condition is OK
+ *          Offset the Spec-Test by 1-4 end-chars to prove yFollowing boundary-condition is OK
  *          
  */
 
@@ -62,8 +64,26 @@ namespace NucleotideGrep
 {
     class Program
     {
+        const string Usage = @"
+NucleotideGrep.exe [ACTION] [params]
+
+ACTION is one of:
+    TEST -- Prints usage and runs self-Tests without further parameters. (default ACTION)
+    GREP -- takes parameters:
+        tPattern
+        xPriorContextLength
+        yFollowingContextLength
+        [asciiFile] -- optional, else reads STDIN
+
+e.g.:
+    NucleotideGrep.exe
+    NucleotideGrep.exe AGTA 5 7 testFile.txt
+";
         static void Main(string[] args)
         {
+            TestSuite.Run();
+            return;
+
             int x = 5;
             int y = 7;
             string T = "AGTA";
@@ -85,10 +105,9 @@ namespace NucleotideGrep
                 foreach (string contextMatch in grep.GetContextMatches(br))
                 {
                     Console.WriteLine(contextMatch);    //  e.g. CAGTGAGTAGTACACC
-                    Console.WriteLine(grep.Marker);     //  e.g.      ====
+                    Console.WriteLine(grep.Marker);     //  e.g.      ^^^^
                 }
             }
-
         }
 
     }
