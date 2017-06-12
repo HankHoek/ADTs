@@ -1,32 +1,16 @@
 AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe
 ==========================================================================
 ==========  Above portion of README.txt serves as a streaming test-file.
+==========	Try:  NucleotideGrep.exe SelfTest
 ==========	Try:  NucleotideGrep.exe AGTA 5 7 README.txt true
-C:\read\vs2017\ADTs\NucleotideGrep\bin\Debug>NucleotideGrep.exe AGTA 5 7 README.txt true
-    AAGTACGTGCAG
-     ^^^^
-CAGTGAGTAGTAGACC
-     ^^^^
-TGAGTAGTAGACCTGA
-     ^^^^
-ATATAAGTAGCTA
-     ^^^^
 ==========	Try:  NucleotideGrep.exe AGTA 5 7 true
 ==========	      (STDIN -- try entering AGTAAGTAAGTAe )
-C:\read\vs2017\ADTs\NucleotideGrep\bin\Debug>NucleotideGrep.exe AGTA 5 7 true
-AGTA -- input
-AGTA -- input
-e -- input
-     AGTAAGTA
-     ^^^^
- AGTAAGTA
-     ^^^^
+==========================================================================
+==========	README:
 ==========================================================================
 
 Project builds NucleotideGrep.exe on windows using free VisualStudio2017 community edition:
 	https://www.visualstudio.com/vs/community/
-
-Summary:
 
 Complete:
 	Naive implementation with tests
@@ -49,10 +33,9 @@ Bits and pieces of a GoLang vNext:
 
 To demonstrate an interest, I will follow-up with a GoLang-based solution.
 
-
 ==========================================================================
 ==========================================================================
-==========  Test Summary:
+==========  Proof of Correctness / Test Summary:
 ==========================================================================
 ==========================================================================
 ==========	Try:  NucleotideGrep.exe AGTA 5 7 README.txt true
@@ -77,14 +60,14 @@ e -- input
  AGTAAGTA
      ^^^^
 ==========================================================================
-==========	Try:  NucleotideGrep.exe
+==========	Try:  NucleotideGrep.exe SelfTest
 ==========  (Outputs helpText, and dumps the output of the self-test suite.)
 C:\read\vs2017\ADTs\NucleotideGrep\bin\Debug>NucleotideGrep.exe
 
 ==============================================================================
 NucleotideGrep.exe Example Usage:
 
-NucleotideGrep.exe (with no parameters)      : Prints help and runs selfTest.
+NucleotideGrep.exe SelfTest                  : Prints help and runs selfTest.
 NucleotideGrep.exe AGTA 5 7 true             : Greps STDIN for AGTA.
 NucleotideGrep.exe AGTA 5 7 README.txt false : Greps README.txt for AGTA.
 

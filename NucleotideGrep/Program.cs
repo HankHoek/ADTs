@@ -47,7 +47,7 @@ namespace NucleotideGrep
 ==============================================================================
 NucleotideGrep.exe Example Usage:
 
-NucleotideGrep.exe (with no parameters)      : Prints help and runs selfTest.
+NucleotideGrep.exe SelfTest                  : Prints help and runs selfTest.
 NucleotideGrep.exe AGTA 5 7 true             : Greps STDIN for AGTA.
 NucleotideGrep.exe AGTA 5 7 README.txt false : Greps README.txt for AGTA.
 
