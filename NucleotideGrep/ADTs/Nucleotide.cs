@@ -121,6 +121,26 @@ namespace NucleotideGrep.ADTs
             }
         }
 
+        public static Nucleotide FromStdin()
+        {
+            while (true)
+            {
+                byte chr = (byte)Console.Read();
+                switch (chr)
+                {
+                    case (byte)NucleotideAscii.A:
+                    case (byte)NucleotideAscii.C:
+                    case (byte)NucleotideAscii.G:
+                    case (byte)NucleotideAscii.T:
+                    case (byte)NucleotideAscii.e:
+                        return new Nucleotide { Ascii = chr };
+
+                    default:
+                        continue;
+                }
+            }
+        }
+
         public override string ToString()
         {
             return Char.ToString();

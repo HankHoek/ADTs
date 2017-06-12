@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="ADTs\CircularBuffer.cs" />
     <Compile Include="ADTs\Nucleotide.cs" />
+    <Compile Include="ADTs\NucleotidesStdin.cs" />
     <Compile Include="Algorithms\Base\NucleotideContextGrep.cs" />
     <Compile Include="Algorithms\BoyerMoore.cs" />
     <Compile Include="Algorithms\KnuthMorrisPratt.cs" />
@@ -57,7 +58,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="README.txt" />
+    <Content Include="README.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

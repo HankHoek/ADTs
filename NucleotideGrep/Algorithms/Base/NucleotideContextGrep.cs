@@ -76,6 +76,8 @@ namespace NucleotideGrep.Algorithms
         protected int TPatternOffset;
         protected int LastOffsetHandledByLeadIn;
 
+        NucleotidesStdin NucleotidesStdin;
+
         protected NucleotideContextGrep(
             Nucleotide[] tPattern,
             int xPrior,
@@ -96,6 +98,7 @@ namespace NucleotideGrep.Algorithms
 
         public IEnumerable<string> GetContextMatches(BinaryReader br)
         {
+            NucleotidesStdin = br == null ? null : new NucleotidesStdin();
             Nucleotide nucleotide;
 
             //  Fill grep's contextBuffer before evaluating any lead-in matches.
@@ -132,8 +135,11 @@ namespace NucleotideGrep.Algorithms
         //  For speed when reading raw ascii bytes.
         static Nucleotide Next(BinaryReader br)
         {
-            return new Nucleotide { Ascii = br.ReadByte() };
+            return br == null
+                ? Nucleotide.FromStdin()
+                : new Nucleotide { Ascii = br.ReadByte() };
         }
+
 
         private bool HasCompleteContextOnAdd(Nucleotide nucleotide)
         {

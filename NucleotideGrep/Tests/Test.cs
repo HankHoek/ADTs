@@ -55,8 +55,8 @@ namespace NucleotideGrep.Tests
                     {
                         cnt++;
                         lastContextMatch = contextMatch;
-                        Console.WriteLine(contextMatch);    //  e.g. CAGTGAGTAGTACACC
-                        Console.WriteLine(grep.Marker);     //  e.g.      ^^^^
+                        Console.WriteLine(contextMatch);        //  e.g. CAGTGAGTAGTACACC
+                        Console.Error.WriteLine(grep.Marker);   //  e.g.      ^^^^
                     }
 
                     //  Assert Expectations
@@ -173,8 +173,20 @@ namespace NucleotideGrep.Tests
                 new Test("SpecTest", "AGTA", 5, 7, "AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe", "4"),
             };
 
+            Console.WriteLine();
+            Console.WriteLine("Starting Self-Test:");
+            Console.WriteLine("Starting Self-Test:  Failure ends with an uncaught exception.");
+            Console.WriteLine("Starting Self-Test:  Success ends with 3 lines like \"!!! SUCCESS !!! -- All tests succeeded.\"");
+            Console.WriteLine("Starting Self-Test:");
+            Console.WriteLine();
+
             foreach (var test in tests)
                 test.Assert();
+
+            Console.WriteLine("!!! SUCCESS !!! -- All tests succeeded.");
+            Console.WriteLine("!!! SUCCESS !!! -- All tests succeeded.");
+            Console.WriteLine("!!! SUCCESS !!! -- All tests succeeded.");
         }
+
     }
 }

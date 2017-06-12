@@ -47,44 +47,70 @@ namespace NucleotideGrep
 ==============================================================================
 NucleotideGrep.exe Example Usage:
 
-NucleotideGrep.exe (with no parameters)   : Prints this help and runs tests.
-NucleotideGrep.exe AGTA 5 7 testFile.txt  : Greps file for AGTA, with x=5, y=7
-NucleotideGrep.exe AGTA 5 7               : Same as above, but from STDIN.
+NucleotideGrep.exe (with no parameters)      : Prints help and runs selfTest.
+NucleotideGrep.exe AGTA 5 7 true             : Greps STDIN for AGTA.
+NucleotideGrep.exe AGTA 5 7 README.txt false : Greps README.txt for AGTA.
 
-When reading STDIN, newlines are ignored so online behavior can be tested.
+In the above examples, 5 is prior context, 7 is following context.
+README.txt should be an ASCII-encoded binary file:
+    Starting with only the characters A,C,G,T and e.
+    'e' is used as EOF and is strictly required.
+When reading STDIN, characters other than ACGTe are ignored for convenience.
+
+Matches are output on STDOUT -- e.g.  AAAAGTAAA
+Markers are output on STDERR -- e.g.     ^^^^
+    unless a final parameter 'false' is given.
 ==============================================================================
 ";
         static void Main(string[] args)
         {
-            TestSuite.Run();
-            return;
+            bool showMarker = true;
+            Stream stream = null;
 
-            int x = 5;
-            int y = 7;
-            string T = "AGTA";
+            switch (args.Length)
+            {
+                case 3:
+                    break;
+                case 4:
+                    if(!bool.TryParse(args[3], out showMarker))
+                        stream = new FileStream(args[3], FileMode.Open, FileAccess.Read);
+                    break;
+                case 5:
+                    showMarker = bool.Parse(args[4]);
+                    stream = new FileStream(args[3], FileMode.Open, FileAccess.Read);
+                    break;
+                default:
+                    Console.Write(Usage);
+                    TestSuite.Run();
+                    return;
+            }
+
+            string T = args[0];
+            int x = int.Parse(args[1]);
+            int y = int.Parse(args[2]);
             var algorithm = NucleotideContextGrepAlgorithm.Naive;
 
-            byte[] streamBytes = Encoding.ASCII.GetBytes("AAAAe");
-            using (MemoryStream stream = new MemoryStream(streamBytes))
-            using (BinaryReader br = new BinaryReader(stream))
-                ShowContextGrep(x, y, T, br);
+            using (BinaryReader br = stream == null ? null : new BinaryReader(stream))
+                ShowContextGrep(x, y, T, br, algorithm, showMarker);
         }
 
-        public static void ShowContextGrep(int x, int y, string T, BinaryReader br
-            , bool showMarker = false)
+        public static void ShowContextGrep(int x, int y, string T
+            , BinaryReader br
+            , NucleotideContextGrepAlgorithm algorithm
+            , bool showMarker)
         {
             Nucleotide[] tPattern = T.Select(c => new Nucleotide { Char = c }).ToArray();
 
             NucleotideContextGrep grep = NucleotideContextGrep.Create(
-                NucleotideContextGrepAlgorithm.Naive,
+                algorithm,
                 tPattern: tPattern, //  e.g. "AGTA"
                 xPrior: x,
                 yFollowing: y);
 
             foreach (string contextMatch in grep.GetContextMatches(br))
             {
-                Console.WriteLine(contextMatch);                //  e.g. CAGTGAGTAGTACACC
-                if (showMarker) Console.WriteLine(grep.Marker);  //  e.g.      ^^^^
+                Console.WriteLine(contextMatch);                        //  e.g. CAGTGAGTAGTACACC
+                if (showMarker) Console.Error.WriteLine(grep.Marker);   //  e.g.      ^^^^
             }
         }
     }
