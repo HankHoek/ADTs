@@ -6,6 +6,10 @@ namespace NucleotideGrep.Algorithms
 {
     /// <summary>
     /// NOT Implemented
+    /// 
+    /// Perf-Note:
+    ///     Worst-case O(streamLength + patternLength) perf-guarantee would be equivalent to BoyerMoore with Galil rule.
+    ///     BoyerMoore with Galil rule is expected to out-perform KnuthMorrisPratt.
     /// </summary>
     sealed class KnuthMorrisPratt : NucleotideContextGrep
     {
@@ -15,7 +19,7 @@ namespace NucleotideGrep.Algorithms
             int yFollowing
             ) : base(tPattern, xPrior, yFollowing)
         {
-            throw new NotFiniteNumberException();
+            throw new NotImplementedException();
         }
 
         protected override IEnumerable<string> GetLeadInMatches()

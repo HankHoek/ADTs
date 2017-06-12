@@ -1,4 +1,8 @@
-﻿/*
+﻿using System;
+using System.Collections.Generic;
+using NucleotideGrep.ADTs;
+
+/*
  *  https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_string_search_algorithm#The_Galil_Rule
  *  https://stackoverflow.com/questions/38206841/boyer-moore-galil-rule
  *  http://www.blackbeltcoder.com/Articles/algorithms/fast-text-search-with-boyer-moore
@@ -9,7 +13,7 @@
  *  Worst-case performance is for long patterns of e.g. "aaa...aaa" over stream "aaaaaa...".
  *      Worst-case performance is of the same order as the output printing, so we could choose to ignore it.
  *      
- *  Adding support for the Galil rule would support worst-case match-inference.
+ *  Adding support for the Galil rule would improve worst-case match-inference.
  *      If we are ok with output-batching and some spec modification, the Galil rule could reduce worst-case Match-cost:
  *          from O(Input + outputMatches*Length) to O(Input + OutputMatches*Length/MaxBatchSize)
  *          
@@ -30,10 +34,6 @@
  * Conclusion:  Probably better to demonstrate something in GoLang than go further down this path in C#.
  */
 
-using System;
-using System.Collections.Generic;
-using NucleotideGrep.ADTs;
-
 namespace NucleotideGrep.Algorithms
 {
     /// <summary>
@@ -47,7 +47,7 @@ namespace NucleotideGrep.Algorithms
             int yFollowing
             ) : base(tPattern, xPrior, yFollowing)
         {
-            throw new NotFiniteNumberException();
+            throw new NotImplementedException();
         }
 
         protected override IEnumerable<string> GetLeadInMatches()

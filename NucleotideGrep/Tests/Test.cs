@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
+using NucleotideGrep;
 using NucleotideGrep.ADTs;
 using NucleotideGrep.Algorithms;
 using System.IO;
@@ -35,18 +35,20 @@ namespace NucleotideGrep.Tests
             {
                 Console.WriteLine(this.ToString());
 
-                Nucleotide[] tPattern = Pattern.Select(x => new Nucleotide { Char = x }).ToArray();
                 byte[] streamBytes = Encoding.ASCII.GetBytes(Stream);
-
-                NucleotideContextGrep grep = NucleotideContextGrep.Create(
-                    NucleotideContextGrepAlgorithm.Naive,
-                    tPattern: tPattern, //  e.g. "AGTA"
-                    xPrior: X,
-                    yFollowing: Y);
-
                 using (MemoryStream stream = new MemoryStream(streamBytes))
                 using (BinaryReader br = new BinaryReader(stream))
                 {
+                    //  Program.ShowContextGrep(X, Y, Pattern, br, showMarker: true);
+
+                    Nucleotide[] tPattern = Pattern.Select(x => new Nucleotide { Char = x }).ToArray();
+
+                    NucleotideContextGrep grep = NucleotideContextGrep.Create(
+                        NucleotideContextGrepAlgorithm.Naive,
+                        tPattern: tPattern, //  e.g. "AGTA"
+                        xPrior: X,
+                        yFollowing: Y);
+
                     int cnt = 0;
                     string lastContextMatch = null;
                     foreach (string contextMatch in grep.GetContextMatches(br))
@@ -58,9 +60,9 @@ namespace NucleotideGrep.Tests
                     }
 
                     //  Assert Expectations
-                    if(cnt == 1)
+                    if (cnt == 1)
                     {
-                        if(lastContextMatch != Expected)
+                        if (lastContextMatch != Expected)
                             throw new ApplicationException(string.Format(
                                 "ERROR:  lastContextMatch != Expected : {0} != {1}", lastContextMatch, Expected));
                     }

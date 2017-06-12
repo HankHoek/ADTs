@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-//using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 using NucleotideGrep.ADTs;
 using JetBlack.Core.Collections.Generic;
@@ -11,8 +9,8 @@ namespace NucleotideGrep.Algorithms
 {
     /// <summary>
     /// The naive algorithm does a string comparison at each position.
-    /// Runtime is O(streamLength * PatternLength + contextMatches*outLength).
-    /// Comparison-cost per nucleotide is O(PatternLength).
+    /// Worst-case runtime is O(streamLength * PatternLength + contextMatches*outLength).
+    /// Worst-case runtime per nucleotide is O(PatternLength).
     ///     For comparison, RabinKarp can update a pre-filter rolling-hash in O(1) time per nucleotide.
     /// The class is sealed so the compiler can optimize the virtual method-calls.
     /// 

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-//using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 using NucleotideGrep.ADTs;
 using JetBlack.Core.Collections.Generic;
@@ -12,10 +10,29 @@ namespace NucleotideGrep.Algorithms
 {
     public enum NucleotideContextGrepAlgorithm
     {
+        /// <summary>
+        /// Slower than other algo's for long patterns.
+        /// </summary>
         Naive,
+
+        /// <summary>
+        /// Worst-case O(input * patternLength) behavior already a constraint of the output format.
+        /// Big-O optimal in that sense.
+        /// Not Implemented.
+        /// </summary>
         RabinKarp,
+
+        /// <summary>
+        /// Output format imposes a Worst-case O(input * patternLength) on the program that is not due to the KNP algorithm.
+        /// Not Implemented.
+        /// </summary>
         KnuthMorrisPratt,
-        BoyerMoore  //  Probably fastest
+
+        /// <summary>
+        /// Probably fastest, but output format would need to be changed and Galil rule used to see Big-O improvements.
+        /// Not Implemented.
+        /// </summary>
+        BoyerMoore,
     }
 
     interface IContextMatchNucleotides
@@ -32,7 +49,7 @@ namespace NucleotideGrep.Algorithms
             int yFollowing
             )
         {
-            switch(algorithm)
+            switch (algorithm)
             {
                 case NucleotideContextGrepAlgorithm.Naive:
                     return new Naive(tPattern, xPrior, yFollowing);
@@ -117,7 +134,6 @@ namespace NucleotideGrep.Algorithms
         {
             return new Nucleotide { Ascii = br.ReadByte() };
         }
-
 
         private bool HasCompleteContextOnAdd(Nucleotide nucleotide)
         {

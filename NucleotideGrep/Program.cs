@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 using NucleotideGrep.ADTs;
 using NucleotideGrep.Algorithms;
@@ -14,45 +12,26 @@ using NucleotideGrep.Tests;
  *  The spec doesn't state desirable properties other than correctness.
  *  I have designed according to the below heirarchy:
  *      Correctness     -- UnitTest results
- *      Big-O Time      -- O(input + output), using RabinKarp...
- *      Memory usage    -- Circular buffer, ideally 2 bits/character
+ *      Big-O Time      -- O(input + output), For longer patterns we need an algo other than Naive.
+ *      Memory usage    -- Circular buffer, ideally 2 bits/character?
  *      Style           -- OO decomposition and encapsulation
- *      Developer time  -- 
- *      Conciseness     --  
- *      Perf-Tuning     -- 
+ *      Developer time  -- Excessive
+ *      Conciseness     -- Insufficient
+ *      Perf-Tuning     -- Only theoretical
  * 
  * Design:
  *  Use a BinaryReader of ascii bytes for input perf.
- *  Use a circular buffer to store a history of {x,isPattern,y}
- *      Since the ACGT alphabet is 4 chars + an EOF, we only need 2 bits to store the 4 chars.
- *      Assuming we are scanning DNA, we could choose not to expect worst-case behavior from an adversarial scan-stream?
+ *  Use a circular buffer to store a history of length(x + T.Length + y}
+ *      Since the ACGT alphabet is 4 chars + an EOF, we only need 2 bits to store the 4 chars.  The implementation currently uses 8 bits.
+ *      Assuming we are scanning DNA, we could choose not to expect worst-case behavior from an adversarial pattern or stream?
+ *      
  *  Algorithms:
- *      Naive -- Demonstrate do a char-walk match of patternT and isPatternT per incoming byte -- O(n*T.Length)
- *      Opportunistic -- If patternT.Length <= 32, represent patternT and isPatternT with 2bit chars in an Int64, and do an straight int-comparison.
- *  Reduce the duplication via alternate algorithm(s):  https://en.wikipedia.org/wiki/String_searching_algorithm
- *      RabinKarp -- Use a rolling hash to pre-filter:
- *          Easiest to implement from scratch
- *          Uses minimal extra memory
- *          Optimal big-O runtime if we ignore hash collisions.
- *              Comparison of a successful match is O(T.Length), but so is printing the result, so big-O of the solution isn't impacted.
- *
- *      BoyerMoore or variant -- Faster
- *      NFA/DFA
- *      index-building on the input stream seems like overkill without additional spec.
+ *      Naive is implemented.  Does a byte-walk match of pattern against the buffer per incoming byte, OK for short patterns.
+ *      Hooks are provided for additional algorithms.  Stubs provide optimization-discussion for Naive, RabinKarp, KnuthMorrisPratt and BoyerMoore+Galil.
  *      
- *      Finding and consuming an appropriate library seems like the right way to go.  Not sure if ok in an interview context.
- *      
- *      
- *      Tests:
- *          0, "", 0
- *          0, "A", 0
- *          0, "A", 1
- *          1, "A", 0
- *          1, "A", 1
- *          Spec-Test
- *          Offset the Spec-Test by 1-4 start-chars to prove xPrior boundary-condition is OK
- *          Offset the Spec-Test by 1-4 end-chars to prove yFollowing boundary-condition is OK
- *          
+ *  Language:
+ *      This implementation is done in C#.
+ *      Rather than finish optimization in C#, it's probably time to cut-over to C++ or GoLang.
  */
 
 
@@ -65,19 +44,15 @@ namespace NucleotideGrep
     class Program
     {
         const string Usage = @"
-NucleotideGrep.exe [ACTION] [params]
+==============================================================================
+NucleotideGrep.exe Example Usage:
 
-ACTION is one of:
-    TEST -- Prints usage and runs self-Tests without further parameters. (default ACTION)
-    GREP -- takes parameters:
-        tPattern
-        xPriorContextLength
-        yFollowingContextLength
-        [asciiFile] -- optional, else reads STDIN
+NucleotideGrep.exe (with no parameters)   : Prints this help and runs tests.
+NucleotideGrep.exe AGTA 5 7 testFile.txt  : Greps file for AGTA, with x=5, y=7
+NucleotideGrep.exe AGTA 5 7               : Same as above, but from STDIN.
 
-e.g.:
-    NucleotideGrep.exe
-    NucleotideGrep.exe AGTA 5 7 testFile.txt
+When reading STDIN, newlines are ignored so online behavior can be tested.
+==============================================================================
 ";
         static void Main(string[] args)
         {
@@ -87,11 +62,18 @@ e.g.:
             int x = 5;
             int y = 7;
             string T = "AGTA";
-            Nucleotide[] tPattern = T
-                .Select(c => new Nucleotide { Char = c })
-                .ToArray();
+            var algorithm = NucleotideContextGrepAlgorithm.Naive;
 
-            byte[] streamBytes = Encoding.ASCII.GetBytes("AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe");
+            byte[] streamBytes = Encoding.ASCII.GetBytes("AAAAe");
+            using (MemoryStream stream = new MemoryStream(streamBytes))
+            using (BinaryReader br = new BinaryReader(stream))
+                ShowContextGrep(x, y, T, br);
+        }
+
+        public static void ShowContextGrep(int x, int y, string T, BinaryReader br
+            , bool showMarker = false)
+        {
+            Nucleotide[] tPattern = T.Select(c => new Nucleotide { Char = c }).ToArray();
 
             NucleotideContextGrep grep = NucleotideContextGrep.Create(
                 NucleotideContextGrepAlgorithm.Naive,
@@ -99,16 +81,13 @@ e.g.:
                 xPrior: x,
                 yFollowing: y);
 
-            using (MemoryStream stream = new MemoryStream(streamBytes))
-            using (BinaryReader br = new BinaryReader(stream))
+            foreach (string contextMatch in grep.GetContextMatches(br))
             {
-                foreach (string contextMatch in grep.GetContextMatches(br))
-                {
-                    Console.WriteLine(contextMatch);    //  e.g. CAGTGAGTAGTACACC
-                    Console.WriteLine(grep.Marker);     //  e.g.      ^^^^
-                }
+                Console.WriteLine(contextMatch);                //  e.g. CAGTGAGTAGTACACC
+                if (showMarker) Console.WriteLine(grep.Marker);  //  e.g.      ^^^^
             }
         }
-
     }
+
 }
+
