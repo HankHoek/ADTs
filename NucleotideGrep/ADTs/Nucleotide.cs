@@ -132,7 +132,10 @@ namespace NucleotideGrep.ADTs
                     case (byte)NucleotideAscii.C:
                     case (byte)NucleotideAscii.G:
                     case (byte)NucleotideAscii.T:
+                        return new Nucleotide { Ascii = chr };
+
                     case (byte)NucleotideAscii.e:
+                        Console.Error.WriteLine();  //  Needed for mono Console.
                         return new Nucleotide { Ascii = chr };
 
                     default:

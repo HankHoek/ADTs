@@ -6,6 +6,14 @@ AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe
 ==========	Try:  NucleotideGrep.exe AGTA 5 7 true
 ==========	      (STDIN -- try entering AGTAAGTAAGTAe )
 ==========================================================================
+==========	To build Docker, run:			goDocker.bat
+==========	To rebuild within Docker, run:	
+==========  To test from docker, run:
+==========		mono /src/obj/Debug/NucleotideGrep.exe 
+==========		mono /src/obj/Debug/NucleotideGrep.exe AGTA 5 5 /src/README.txt true
+==========	    mono /src/obj/Debug/NucleotideGrep.exe AGTA 5 7 true
+==========	      (STDIN -- try entering AGTAAGTAAGTAe )
+==========================================================================
 ==========	README:
 ==========================================================================
 
