@@ -14,8 +14,37 @@ AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe
 ==========	    mono /src/obj/Debug/NucleotideGrep.exe AGTA 5 7 true
 ==========	      (STDIN -- try entering AGTAAGTAAGTAe )
 ==========================================================================
-==========	README:
+PS C:\source\ADTs\NucleotideGrep> docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+csharp              latest              f9e0a0ab7055        24 seconds ago      620MB
+hankhoek/csharp     naive               c86d0292efb2        About an hour ago   620MB
+<none>              <none>              609cdda39553        About an hour ago   620MB
+<none>              <none>              c2084159a080        About an hour ago   620MB
+<none>              <none>              e825e3ad803c        4 hours ago         620MB
+<none>              <none>              4c2e7119c0e7        4 hours ago         620MB
+<none>              <none>              70dc88d41279        4 hours ago         620MB
+mono                latest              e4a9afed02d5        4 weeks ago         580MB
+hello-world         latest              48b5124b2768        5 months ago        1.84kB
+PS C:\source\ADTs\NucleotideGrep> docker tag f9e0a0ab7055 hankhoek/grep:naiveCSharp
+PS C:\source\ADTs\NucleotideGrep> docker push hankhoek/grep
+The push refers to a repository [docker.io/hankhoek/grep]
+c0496d6cd8ba: Pushed
+4d367bb2720e: Pushed
+a2a38741837d: Pushed
+ad43c5bb3ae5: Pushed
+6e7a50189ef9: Mounted from library/mono
+705511f23b98: Pushed
+56567a73e59c: Mounted from library/mono
+8d4d1ab5ff74: Mounted from library/mono
+naiveCSharp: digest: sha256:0b1c6d9df9997b065adf395e50ac032ab9ed1c0e47956e61c82371496b35423c size: 1997
+PS C:\source\ADTs\NucleotideGrep>
+naive: digest: sha256:f5737065233b203b8e56a317d32c88218947289822f1276a5da02a8e974213e7 size: 1997
 ==========================================================================
+Docker Pull Command:    docker pull hankhoek/grep
+==========================================================================
+==========	README:
+==========	README:
+==========	README:
 
 Project builds NucleotideGrep.exe on windows using free VisualStudio2017 community edition:
 	https://www.visualstudio.com/vs/community/
