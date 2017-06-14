@@ -8,22 +8,24 @@ namespace WindowedStats.Classes
 {
     sealed class Mean : Stat
     {
-        long Window;
         long Total;
         long Cnt;
         double _mean;
 
         public override double Value
         {
-            get { return _mean; }
+            get
+            {
+                return Cnt >= base.Window.Lookback
+                  ? _mean : double.NaN;
+            }
         }
 
-        public Mean(Window window)
+        public Mean(Window window) : base(window)
         {
-            Window = window.Lookback;
         }
 
-        public override void Observe(int add, int drop)
+        public override void Observe(int add, int? drop)
         {
             Cnt++;
             if (Cnt == 1)
@@ -33,7 +35,7 @@ namespace WindowedStats.Classes
             }
             else
             {
-                _mean = _mean + (add - drop - _mean) / Cnt;
+                _mean = _mean + (add - (drop??0) - _mean) / Cnt;
             }
         }
 

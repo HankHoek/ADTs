@@ -8,7 +8,7 @@ namespace WindowedStats.Classes
 {
     interface IObserve
     {
-        void Observe(int add, int drop);
+        void Observe(int add, int? drop);
     }
     interface IReport
     {
@@ -17,12 +17,19 @@ namespace WindowedStats.Classes
 
     class Window
     {
-        public long Lookback;
+        public int Lookback;
     }
 
     abstract class Stat : IObserve, IReport
     {
+        public Window Window { get; private set; }
         public abstract double Value { get; }
-        public abstract void Observe(int add, int drop);
+
+        public Stat(Window window)
+        {
+            Window = window;
+        }
+
+        public abstract void Observe(int add, int? drop);
     }
 }

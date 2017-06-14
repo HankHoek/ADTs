@@ -9,22 +9,23 @@ namespace WindowedStats.Classes
 {
     sealed class Max : Stat
     {
-        Window Window;
         private Heap<int> MaxHeap;
 
         int _value;
         public override double Value
         {
-            get { return _value; }
+            get
+            {
+                return MaxHeap.Count >= base.Window.Lookback ? _value : double.NaN;
+            }
         }
 
-        public Max(Window window)
+        public Max(Window window) : base(window)
         {
-            Window = window;
             MaxHeap = new Heap<int>(10, Comparer<int>.Default, true);
         }
 
-        public override void Observe(int add, int drop)
+        public override void Observe(int add, int? drop)
         {
             MaxHeap.Add(add);
             _value = MaxHeap.Pop();
