@@ -53,9 +53,9 @@ namespace WindowedStats.Tests
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine("Expectation = " + Expectation);
-            sb.AppendLine("value = " + Value);
             sb.AppendLine("===========");
+            //sb.AppendLine("Expectation = " + Expectation);
+            sb.AppendLine("value = " + Value);
 
             return sb.ToString();
         }
