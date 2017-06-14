@@ -24,6 +24,17 @@ namespace WindowedStats.Tests
         {
 
         }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine("Expectation = " + Expectation);
+            sb.AppendLine("value = " + Value);
+            sb.AppendLine("===========");
+
+            return sb.ToString();
+        }
     }
     class Expectation
     {
@@ -41,7 +52,7 @@ namespace WindowedStats.Tests
         BinaryReader Br;
         Assertion[] Assertions;
         Stats Stats;
-        
+
 
         public Test(string name, IEnumerable<Assertion> assertions)
         {
@@ -51,48 +62,50 @@ namespace WindowedStats.Tests
 
         public void Assert()
         {
-            try
+            //try
+            //{
+            using (MemoryStream stream = new MemoryStream())
+            using (BinaryWriter bw = new BinaryWriter(stream))
+            using (BinaryReader br = new BinaryReader(stream))
             {
-                using (MemoryStream stream = new MemoryStream())
-                using (BinaryWriter bw = new BinaryWriter(stream))
-                using (BinaryReader br = new BinaryReader(stream))
+                try
                 {
-                    try
+                    foreach (var assertion in Assertions)
                     {
-                        foreach (var assertion in Assertions)
-                            bw.Write(assertion.Value);
+                        //  Prep the stream
+                        bw.Seek(0, SeekOrigin.Begin);
+                        bw.Write(assertion.Value);
+                        bw.Seek(0, SeekOrigin.Begin);
 
-                        int offset = 0;
-                        while (true)
-                        {
-                            var assertion = Assertions[offset++];
-                            Console.WriteLine(assertion);
+                        Console.WriteLine(assertion);
 
-                            int i = br.Read();
-                            if (assertion.Value != i)
-                                throw new ApplicationException();
+                        //  Consume from the stream
+                        int i = br.Read();
+                        if (assertion.Value != i)
+                            throw new ApplicationException(string.Format(
+                                "INPUT ERROR -- Expected != Actual : {0} != {1}", assertion.Value, i));
 
-                            assertion.Assert();
-                        }
-                    }
-                    catch (IOException)
-                    {
-
+                        assertion.Assert();
                     }
                 }
+                catch (IOException)
+                {
+
+                }
             }
-            catch (Exception e)
-            {
-                string strType = e.GetType().ToString();
-                Console.WriteLine("  ExceptionType={0}", strType);
-                throw;
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    string strType = e.GetType().ToString();
+            //    Console.WriteLine("  ExceptionType={0}", strType);
+            //    throw;
+            //}
         }
 
         public override string ToString()
         {
             return "NotImplemented...";
-//            return string.Format("Name={0}  Pattern=\"{1}\"  X={2}  Y={3}  Stream=\"{4}\"  Expected=\"{6}\"", Name, Pattern, X, Y, Stream, Environment.NewLine, Expected);
+            //            return string.Format("Name={0}  Pattern=\"{1}\"  X={2}  Y={3}  Stream=\"{4}\"  Expected=\"{6}\"", Name, Pattern, X, Y, Stream, Environment.NewLine, Expected);
         }
     }
 
@@ -101,7 +114,8 @@ namespace WindowedStats.Tests
         public static void Run()
         {
             int[] s6 = new int[] { 1, 2, 3, 4, 5, 6 };
-            var stats35 = new Stats(new Stat[] {
+
+            var stats3_5 = new Stats(new Stat[] {
                 new Mean(new Window{ Lookback=3 }),
                 new Max(new Window{ Lookback=3 }),
 
@@ -109,21 +123,59 @@ namespace WindowedStats.Tests
                 new Max(new Window{ Lookback=5 }),
             });
 
-            var assertionsS6W35 = new Assertion[]
+            var assertionsS6W3_5 = new Assertion[]
             {
-                new Assertion(stats35, 1, new Expectation{ Values=new double[]{ double.NaN, double.NaN, double.NaN, double.NaN } }),
-                new Assertion(stats35, 2, new Expectation{ Values=new double[]{ double.NaN, double.NaN, double.NaN, double.NaN } }),
-                new Assertion(stats35, 3, new Expectation{ Values=new double[]{ 2,3, double.NaN, double.NaN } }),
-                new Assertion(stats35, 4, new Expectation{ Values=new double[]{ 3,4, double.NaN, double.NaN } }),
-                new Assertion(stats35, 5, new Expectation{ Values=new double[]{ 4,5,3,5 } }),
-                new Assertion(stats35, 6, new Expectation{ Values=new double[]{ 5,6,4,6 } }),
+                new Assertion(stats3_5, 1, new Expectation{ Values=new double[]{ double.NaN, double.NaN, double.NaN, double.NaN } }),
+                new Assertion(stats3_5, 2, new Expectation{ Values=new double[]{ double.NaN, double.NaN, double.NaN, double.NaN } }),
+                new Assertion(stats3_5, 3, new Expectation{ Values=new double[]{ 2,3, double.NaN, double.NaN } }),
+                new Assertion(stats3_5, 4, new Expectation{ Values=new double[]{ 3,4, double.NaN, double.NaN } }),
+                new Assertion(stats3_5, 5, new Expectation{ Values=new double[]{ 4,5,3,5 } }),
+                new Assertion(stats3_5, 6, new Expectation{ Values=new double[]{ 5,6,4,6 } }),
             };
+
+            int[] s21 = new int[] {
+                1,1,1,1,1,1,1,1,1,1,
+                1,1,1,1,1,1,1,1,1,1,
+                1,
+            };
+
+            var stats3_20 = new Stats(new Stat[] {
+                new Mean(new Window{ Lookback=3 }),
+                new Max(new Window{ Lookback=3 }),
+
+                new Mean(new Window{ Lookback=20 }),
+                new Max(new Window{ Lookback=20 }),
+            });
+
+            var assertionsS21W3_20 = new Assertion[]
+            {
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ double.NaN, double.NaN, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ double.NaN, double.NaN, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ 1,1, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ 1,1, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ 1,1, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ 1,1, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ 1,1, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ 1,1, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ 1,1, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ 1,1, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ 1,1, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ 1,1, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ 1,1, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ 1,1, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ 1,1, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ 1,1, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ 1,1, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ 1,1, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ 1,1, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ 1,1, double.NaN, double.NaN } }),
+                new Assertion(stats3_20, 1, new Expectation{ Values=new double[]{ 1,1, double.NaN, double.NaN } }),
+            };
+
             var tests = new List<Test>()
             {
-                new Test("name", assertionsS6W35),
-                //       name           windows     stream  expectations
-                //new Test("1...6 {3,5}", new[]{3,5}, s6,     new Expected(), ),
-
+                new Test("name", assertionsS6W3_5),
+                new Test("name", assertionsS21W3_20 ),
             };
 
             Console.WriteLine();
