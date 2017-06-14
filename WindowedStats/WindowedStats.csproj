@@ -49,6 +49,8 @@
     <Compile Include="Classes\Max.cs" />
     <Compile Include="Classes\Mean.cs" />
     <Compile Include="Classes\Stat.cs" />
+    <Compile Include="Classes\Stats.cs" />
+    <Compile Include="MicroLibraries\MicroHeap\Heap.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\Test.cs" />

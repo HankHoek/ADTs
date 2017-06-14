@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WindowedStats.Classes
 {
-    class Mean : Stat
+    sealed class Mean : Stat
     {
         long Window;
         long Total;
@@ -16,6 +16,11 @@ namespace WindowedStats.Classes
         public override double Value
         {
             get { return _mean; }
+        }
+
+        public Mean(Window window)
+        {
+            Window = window.Lookback;
         }
 
         public override void Observe(int add, int drop)
@@ -32,9 +37,5 @@ namespace WindowedStats.Classes
             }
         }
 
-        protected Mean(long window)
-        {
-            Window = window;
-        }
     }
 }

@@ -2,90 +2,82 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WindowedStats.Classes;
 
 using System.IO;
 
 namespace WindowedStats.Tests
 {
-    struct IntExpectation
+    class Assertion
     {
+        public Stats Stats;
         public int Value;
         public Expectation Expectation;
+
+        public Assertion(Stats stats, int value, Expectation expectation)
+        {
+            Stats = stats;
+            Value = value;
+            Expectation = expectation;
+        }
+        public void Assert()
+        {
+
+        }
     }
     class Expectation
     {
-        public Stat[] Stats;
+        public double[] Values;
     }
-    class Stat
-    {
 
-    }
     class Test
     {
         //           name               windows     stream  expectations
         //  new Test("1,2,3...  {3,5}", new[]{3,5}, s6,     new Expected(), ),
 
         public string Name;
-    long[] Windows;
-    BinaryReader Br;
-    IEnumerable<Expectation> Expectations;
-        public int Y;
-        public string Stream;
-        public string Expected;
+        long[] Windows;
+        int[] Stream;
+        BinaryReader Br;
+        Assertion[] Assertions;
+        Stats Stats;
+        
 
-        public Test(string name, string pattern, int x, int y, string stream, string expected = "Unknown")
+        public Test(string name, IEnumerable<Assertion> assertions)
         {
             Name = name;
-            Pattern = pattern;
-            X = x;
-            Y = y;
-            Stream = stream;
-            Expected = expected;
+            Assertions = assertions.ToArray();
         }
 
         public void Assert()
         {
             try
             {
-                Console.WriteLine(this.ToString());
-
-                byte[] streamBytes = Encoding.ASCII.GetBytes(Stream);
-                using (MemoryStream stream = new MemoryStream(streamBytes))
+                using (MemoryStream stream = new MemoryStream())
+                using (BinaryWriter bw = new BinaryWriter(stream))
                 using (BinaryReader br = new BinaryReader(stream))
                 {
-                    //  Program.ShowContextGrep(X, Y, Pattern, br, showMarker: true);
-
-                    Nucleotide[] tPattern = Pattern.Select(x => new Nucleotide { Char = x }).ToArray();
-
-                    NucleotideContextGrep grep = NucleotideContextGrep.Create(
-                        NucleotideContextGrepAlgorithm.Naive,
-                        tPattern: tPattern, //  e.g. "AGTA"
-                        xPrior: X,
-                        yFollowing: Y);
-
-                    int cnt = 0;
-                    string lastContextMatch = null;
-                    foreach (string contextMatch in grep.GetContextMatches(br))
+                    try
                     {
-                        cnt++;
-                        lastContextMatch = contextMatch;
-                        Console.WriteLine(contextMatch);        //  e.g. CAGTGAGTAGTACACC
-                        Console.Error.WriteLine(grep.Marker);   //  e.g.      ^^^^
+                        foreach (var assertion in Assertions)
+                            bw.Write(assertion.Value);
+
+                        int offset = 0;
+                        while (true)
+                        {
+                            var assertion = Assertions[offset++];
+                            Console.WriteLine(assertion);
+
+                            int i = br.Read();
+                            if (assertion.Value != i)
+                                throw new ApplicationException();
+
+                            assertion.Assert();
+                        }
                     }
+                    catch (IOException)
+                    {
 
-                    //  Assert Expectations
-                    if (cnt == 1)
-                    {
-                        if (lastContextMatch != Expected)
-                            throw new ApplicationException(string.Format(
-                                "ERROR:  lastContextMatch != Expected : {0} != {1}", lastContextMatch, Expected));
-                    }
-                    else
-                    {
-                        int expectedCnt = int.Parse(Expected);
-                        if (cnt != expectedCnt)
-                            throw new ApplicationException(string.Format(
-                                "ERROR:  count != expectedCnt : {0} != {1}", cnt, expectedCnt));
                     }
                 }
             }
@@ -93,14 +85,14 @@ namespace WindowedStats.Tests
             {
                 string strType = e.GetType().ToString();
                 Console.WriteLine("  ExceptionType={0}", strType);
-                if (Expected != strType)
-                    throw;
+                throw;
             }
         }
 
         public override string ToString()
         {
-            return string.Format("Name={0}  Pattern=\"{1}\"  X={2}  Y={3}  Stream=\"{4}\"  Expected=\"{6}\"", Name, Pattern, X, Y, Stream, Environment.NewLine, Expected);
+            return "NotImplemented...";
+//            return string.Format("Name={0}  Pattern=\"{1}\"  X={2}  Y={3}  Stream=\"{4}\"  Expected=\"{6}\"", Name, Pattern, X, Y, Stream, Environment.NewLine, Expected);
         }
     }
 
@@ -109,91 +101,29 @@ namespace WindowedStats.Tests
         public static void Run()
         {
             int[] s6 = new int[] { 1, 2, 3, 4, 5, 6 };
+            var stats35 = new Stats(new Stat[] {
+                new Mean(new Window{ Lookback=3 }),
+                new Max(new Window{ Lookback=3 }),
 
+                new Mean(new Window{ Lookback=5 }),
+                new Max(new Window{ Lookback=5 }),
+            });
 
-
+            var assertionsS6W35 = new Assertion[]
+            {
+                new Assertion(stats35, 1, new Expectation{ Values=new double[]{ double.NaN, double.NaN, double.NaN, double.NaN } }),
+                new Assertion(stats35, 2, new Expectation{ Values=new double[]{ double.NaN, double.NaN, double.NaN, double.NaN } }),
+                new Assertion(stats35, 3, new Expectation{ Values=new double[]{ 2,3, double.NaN, double.NaN } }),
+                new Assertion(stats35, 4, new Expectation{ Values=new double[]{ 3,4, double.NaN, double.NaN } }),
+                new Assertion(stats35, 5, new Expectation{ Values=new double[]{ 4,5,3,5 } }),
+                new Assertion(stats35, 6, new Expectation{ Values=new double[]{ 5,6,4,6 } }),
+            };
             var tests = new List<Test>()
             {
+                new Test("name", assertionsS6W35),
                 //       name           windows     stream  expectations
-                new Test("1,2,3,4,5,6", new[]{3,5}, s6,     new Expected(), ),
+                //new Test("1...6 {3,5}", new[]{3,5}, s6,     new Expected(), ),
 
-
-
-
-                new Test("Missing 'e' throws", "A", 5, 7, "ACGT", "System.IO.EndOfStreamException"),
-
-                //        Name     T   x  y  stream   matchExpectation/matchCount
-                new Test("0,A,0", "A", 0, 0, "ACGTe", "A"),
-                new Test("0,A,1", "A", 0, 1, "ACGTe", "AC"),
-                new Test("0,A,2", "A", 0, 2, "ACGTe", "ACG"),
-
-                new Test("1,A,0", "A", 1, 0, "ACGTe", " A"),
-                new Test("1,A,1", "A", 1, 1, "ACGTe", " AC"),
-                new Test("1,A,2", "A", 1, 2, "ACGTe", " ACG"),
-
-                new Test("2,A,0", "A", 2, 0, "ACGTe", "  A"),
-                new Test("2,A,1", "A", 2, 1, "ACGTe", "  AC"),
-                new Test("2,A,2", "A", 2, 2, "ACGTe", "  ACG"),
-
-
-                new Test("Name", "C", 0, 0, "ACGTe", "C"),
-                new Test("Name", "C", 0, 1, "ACGTe", "CG"),
-                new Test("Name", "C", 0, 2, "ACGTe", "CGT"),
-
-                new Test("Name", "C", 1, 0, "ACGTe", "AC"),
-                new Test("Name", "C", 1, 1, "ACGTe", "ACG"),
-                new Test("Name", "C", 1, 2, "ACGTe", "ACGT"),
-
-                new Test("Name", "C", 2, 0, "ACGTe", " AC"),
-                new Test("Name", "C", 2, 1, "ACGTe", " ACG"),
-                new Test("Name", "C", 2, 2, "ACGTe", " ACGT"),
-
-
-                new Test("Name", "G", 0, 0, "ACGTe", "G"),
-                new Test("Name", "G", 0, 1, "ACGTe", "GT"),
-                new Test("Name", "G", 0, 2, "ACGTe", "GT"),
-
-                new Test("Name", "G", 1, 0, "ACGTe", "CG"),
-                new Test("Name", "G", 1, 1, "ACGTe", "CGT"),
-                new Test("Name", "G", 1, 2, "ACGTe", "CGT"),
-
-                new Test("Name", "G", 2, 0, "ACGTe", "ACG"),
-                new Test("Name", "G", 2, 1, "ACGTe", "ACGT"),
-                new Test("Name", "G", 2, 2, "ACGTe", "ACGT"),
-
-                new Test("Name", "T", 0, 0, "ACGTe", "T"),
-                new Test("Name", "T", 0, 1, "ACGTe", "T"),
-                new Test("Name", "T", 0, 2, "ACGTe", "T"),
-
-                new Test("Name", "T", 1, 0, "ACGTe", "GT"),
-                new Test("Name", "T", 1, 1, "ACGTe", "GT"),
-                new Test("Name", "T", 1, 2, "ACGTe", "GT"),
-
-                new Test("Name", "T", 2, 0, "ACGTe", "CGT"),
-                new Test("Name", "T", 2, 1, "ACGTe", "CGT"),
-                new Test("Name", "T", 2, 2, "ACGTe", "CGT"),
-
-                new Test("MatchEvery", "A", 2, 2, "e", "0"),
-                new Test("MatchEvery", "A", 2, 2, "Ae", "  A"),
-                new Test("MatchEvery", "A", 2, 2, "AAe", "2"),
-                new Test("MatchEvery", "A", 2, 2, "AAAe", "3"),
-                new Test("MatchEvery", "A", 2, 2, "AAAAe", "4"),
-                new Test("MatchEvery", "A", 2, 2, "AAAAAe", "5"),
-
-                new Test("RollStart", "AGTA", 3, 3, "AAAAAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe", "4"),
-                new Test("RollStart", "AGTA", 3, 3,  "AAAAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe", "4"),
-                new Test("RollStart", "AGTA", 3, 3,   "AAAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe", "4"),
-                new Test("RollStart", "AGTA", 3, 3,    "AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe", "4"),
-                new Test("RollStart", "AGTA", 3, 3,     "AGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe", "4"),
-
-                new Test("RollEnd", "AGTA", 3, 3, "AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe", "4"),
-                new Test("RollEnd", "AGTA", 3, 3, "AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTe", "4"),
-                new Test("RollEnd", "AGTA", 3, 3, "AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCe", "4"),
-                new Test("RollEnd", "AGTA", 3, 3, "AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGe", "4"),
-                new Test("RollEnd", "AGTA", 3, 3, "AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAe", "4"),
-
-
-                new Test("SpecTest", "AGTA", 5, 7, "AAGTACGTGCAGTGAGTAGTAGACCTGACGTAGACCGATATAAGTAGCTAe", "4"),
             };
 
             Console.WriteLine();

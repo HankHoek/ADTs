@@ -1,19 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+//using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WindowedStats.MicroHeap;
 
 namespace WindowedStats.Classes
 {
-    class Max : Stat
+    sealed class Max : Stat
     {
-        public override double Value => throw new NotImplementedException();
+        Window Window;
+        private Heap<int> MaxHeap;
+
+        int _value;
+        public override double Value
+        {
+            get { return _value; }
+        }
+
+        public Max(Window window)
+        {
+            Window = window;
+            MaxHeap = new Heap<int>(10, Comparer<int>.Default, true);
+        }
 
         public override void Observe(int add, int drop)
         {
-            C5.hea
-            throw new NotImplementedException();
+            MaxHeap.Add(add);
+            _value = MaxHeap.Pop();
+            if (MaxHeap.Count < Window.Lookback)
+                MaxHeap.Push(_value);
         }
     }
 }
