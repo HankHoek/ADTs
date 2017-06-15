@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Documentation\WindowedStatisticsWriteup.docx" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
