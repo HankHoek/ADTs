@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBlack.Core.Collections.Generic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace WindowedStats.Classes
 {
     interface IObserve
     {
-        void Observe(int add, int? drop);
+        void Observe(int add, int? drop, CircularBuffer<int> circularBuffer);
     }
     interface IReport
     {
@@ -30,6 +31,6 @@ namespace WindowedStats.Classes
             Window = window;
         }
 
-        public abstract void Observe(int add, int? drop);
+        public abstract void Observe(int add, int? drop, CircularBuffer<int> circularBuffer);
     }
 }

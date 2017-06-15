@@ -27,11 +27,11 @@ namespace WindowedStats.Tests
         }
         public void Assert()
         {
+            int add = this.Value;
+            Stats.Observe(add);
+
             for (int i = 0; i < Expectation.Values.Length; i++)
             {
-                int add = this.Value;
-                Stats.Observe(add);
-
                 double stat = this.Stats.AsArray[i].Value;
                 double expectation = Expectation.Values[i];
 
@@ -45,6 +45,7 @@ namespace WindowedStats.Tests
                 {
                     Console.Error.WriteLine(
                         "ERROR: stat != expectation -- {0} != {1}", stat, expectation);
+                    throw new ApplicationException("ASSERTION ERROR");
                 }
             }
         }

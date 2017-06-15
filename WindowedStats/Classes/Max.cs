@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBlack.Core.Collections.Generic;
+using System;
 using System.Collections.Generic;
 //using System.Linq;
 using System.Text;
@@ -25,7 +26,7 @@ namespace WindowedStats.Classes
             MaxHeap = new Heap<int>(10, Comparer<int>.Default, true);
         }
 
-        public override void Observe(int add, int? drop)
+        public override void Observe(int add, int? bufferDrop, CircularBuffer<int> circularBuffer)
         {
             MaxHeap.Add(add);
             _value = MaxHeap.Pop();

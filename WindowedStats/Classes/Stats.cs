@@ -18,21 +18,24 @@ namespace WindowedStats.Classes
             AsArray = stats.ToArray();
 
             if (AsArray.Length > 0)
-                SharedBuffer = new CircularBuffer<int>(AsArray[0].Window.Lookback);
+            {
+                int maxBufferLength = AsArray.Max(x => x.Window.Lookback);
+                SharedBuffer = new CircularBuffer<int>(maxBufferLength);
+            }
         }
 
         public void Observe(int add)
         {
-            int? drop = SharedBuffer.Count == SharedBuffer.Capacity
+            int? bufferDrop = SharedBuffer.Count == SharedBuffer.Capacity
                 ? SharedBuffer.Dequeue()
                 : default(int?);
 
             SharedBuffer.Enqueue(add);
 
             foreach (var stat in AsArray)
-                stat.Observe(add, drop);
+            {
+                stat.Observe(add, bufferDrop, SharedBuffer);
+            }
         }
-
-        //public void Observe()
     }
 }

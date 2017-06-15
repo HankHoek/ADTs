@@ -25,6 +25,9 @@ namespace WindowedStats.Tests
             using (BinaryWriter bw = new BinaryWriter(stream))
             using (BinaryReader br = new BinaryReader(stream))
             {
+                Console.WriteLine("==================================");
+                Console.WriteLine("================================== Test:  {0}", Name);
+                Console.WriteLine("==================================");
                 foreach (var assertion in Assertions)
                 {
                     //  Prep the stream
