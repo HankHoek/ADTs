@@ -49,6 +49,7 @@ namespace WindowedStats.Tests
             }
         }
 
+
         public override string ToString()
         {
             var sb = new StringBuilder();
